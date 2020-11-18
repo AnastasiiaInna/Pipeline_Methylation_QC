@@ -14,27 +14,58 @@ https://www.bioconductor.org/packages/release/workflows/vignettes/methylationArr
 
 ###############################################
 # load R packages
-library(minfi) 
-library(minfiData)
-library(minfiDataEPIC)
-library(RColorBrewer)	
-library(IlluminaHumanMethylation450kanno.ilmn12.hg19) 
-library(IlluminaHumanMethylation450kmanifest)
-library(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)
-library(IlluminaHumanMethylationEPICmanifest)
+if(!require(minfi)) {
+  install.packages("minfi"); require(minfi)}
+
+if(!require(minfiData)) {
+  install.packages("minfiData"); require(minfiData)}
+
+if(!require(RColorBrewer)) {
+  install.packages("RColorBrewer"); require(RColorBrewer)}
+
+if(!require(IlluminaHumanMethylation450kanno.ilmn12.hg19)) {
+  install.packages("IlluminaHumanMethylation450kanno.ilmn12.hg19"); require(IlluminaHumanMethylation450kanno.ilmn12.hg19)}
+
+if(!require(IlluminaHumanMethylation450kmanifest)) {
+  install.packages("IlluminaHumanMethylation450kmanifest"); require(IlluminaHumanMethylation450kmanifest)}
+
+if(!require(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)) {
+  install.packages("IlluminaHumanMethylationEPICanno.ilm10b4.hg19"); require(IlluminaHumanMethylationEPICanno.ilm10b4.hg19)}
+
+if(!require(minfiData)) {
+  install.packages("IlluminaHumanMethylationEPICmanifest"); require(IlluminaHumanMethylationEPICmanifest)}
+
+# library(minfiDataEPIC)
+
 library(sva)
-library(RPMM)
 library(ggplot2)
-library(missMethyl)
 library(matrixStats)
-library(wateRmelon)
 library(reshape)
+
+library(RPMM)
+library(missMethyl)
+library(wateRmelon)
 library(Hmisc)
 
 sessionInfo <- sessionInfo()
 
 # set your working directory for the analysis
-setwd("/folder/")
+# setwd("/folder/")
+
+sh.script.mkdir <- "cd Pipeline_Methylation_QC ; 
+                    
+                    if [ ! -d folder ] 
+                    then 
+                      mkdir folder 
+                    fi ; 
+                    
+                    cd folder ;
+      
+                    mkdir RData Reports addFiles files_for_mixup finalData"
+
+system(sh.script.mkdir)
+
+
 
 ## should be folder with 
   # samplesheet
@@ -67,6 +98,10 @@ writeLines(capture.output(sessionInfo()), "sessionInfo.txt")
 #########################################################
 ##### Read in sheet with batch and ID info:
 targets = read.csv("samplesheet_itu_lcs_for_minfi.csv")
+
+dir.data <- paste0(getwd(), "/Pipeline_Methylation_QC/folder/idat")
+
+RGSet <- read.metharray.exp(base = dir.data)
 
 RGSet	= read.metharray.exp(targets = targets)
 dim(RGSet) # probe level with red/green intensities
